@@ -1,0 +1,28 @@
+<Project>
+  <PropertyGroup>
+    <_RoboticoSharedMsbuildImport Condition="Exists('$(MSBuildThisFileDirectory)Robotico.Library.Shared.props')">$(MSBuildThisFileDirectory)Robotico.Library.Shared.props</_RoboticoSharedMsbuildImport>
+    <_RoboticoSharedMsbuildImport Condition="'$(_RoboticoSharedMsbuildImport)' == ''">$([MSBuild]::GetPathOfFileAbove('Robotico.Library.Shared.props', '$(MSBuildThisFileDirectory)'))</_RoboticoSharedMsbuildImport>
+  </PropertyGroup>
+  <Import Project="$(_RoboticoSharedMsbuildImport)" Condition="'$(_RoboticoSharedMsbuildImport)' != ''" />
+
+  <!-- MishimaDocs engine targets net10.0 only; this adapter must match for ProjectReference restore. -->
+  <PropertyGroup>
+    <TargetFrameworks>net10.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Version>0.1.0</Version>
+    <Product>Robotico.Repository.Mishima</Product>
+    <PackageId>Robotico.Repository.Mishima</PackageId>
+    <Title>Robotico.Repository.Mishima</Title>
+    <Description>IRepository and IUnitOfWork backed by MishimaDocs (embedded document store). Each repository operation commits immediately; IUnitOfWork.CommitAsync is a no-op success for API parity with transactional stores.</Description>
+    <PackageTags>repository;mishima;mishimadocs;robotico</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <_RoboticoCsharpNuGetsDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\nugets'))</_RoboticoCsharpNuGetsDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="Exists('$(_RoboticoCsharpNuGetsDir)')">
+    <PackageOutputPath>$([MSBuild]::EnsureTrailingSlash('$(_RoboticoCsharpNuGetsDir)'))</PackageOutputPath>
+  </PropertyGroup>
+</Project>

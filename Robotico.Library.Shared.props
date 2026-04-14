@@ -1,0 +1,38 @@
+<Project>
+
+  <!--
+
+    Shared library defaults for Robotico C# packages under this workspace.
+
+    Each package repo also contains a copy (GitHub/standalone); Directory.Build.props
+    prefers that path, then GetPathOfFileAbove for monorepo csharp/ layout. After edits
+    here, run csharp/tools/sync-robotico-library-props.ps1.
+
+  -->
+
+  <Import Project="$(MSBuildThisFileDirectory)Robotico.Library.AnalyzerDefaults.props" />
+
+
+
+  <PropertyGroup>
+
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+
+    <LangVersion>latest</LangVersion>
+
+  </PropertyGroup>
+
+  <!--
+    Monorepo local NuGet feed (csharp/nugets): set environment variable ROBOTICO_USE_LOCAL_NUGETS=true
+    and run csharp/tools/pack-robotico-tier0-local-nugets.ps1 (and later tier scripts). Standalone
+    clones on GitHub omit nuget.Local.config above the repo; GetPathOfFileAbove returns empty and
+    this block does nothing. See csharp/build/ROBOTICO_NUGET_DUAL_MODE_PLAN.adoc.
+  -->
+  <PropertyGroup>
+    <_RoboticoLocalNugetConfig>$([MSBuild]::GetPathOfFileAbove('nuget.Local.config', '$(MSBuildThisFileDirectory)'))</_RoboticoLocalNugetConfig>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(ROBOTICO_USE_LOCAL_NUGETS)' == 'true' And '$(_RoboticoLocalNugetConfig)' != '' And Exists('$(_RoboticoLocalNugetConfig)')">
+    <RestoreConfigFile>$(_RoboticoLocalNugetConfig)</RestoreConfigFile>
+  </PropertyGroup>
+
+</Project>
