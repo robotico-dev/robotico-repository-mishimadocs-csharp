@@ -42,6 +42,9 @@ packages/
 coverage*.json
 coverage*.xml
 
+# BenchmarkDotNet
+BenchmarkDotNet.Artifacts/
+
 # IDE / Editor
 .idea/
 *.swp
@@ -50,3 +53,9 @@ coverage*.xml
 # OS
 .DS_Store
 Thumbs.db
+
+# CodeRush
+*.cr.userlog
+
+# Doc build (if any)
+doc/build/

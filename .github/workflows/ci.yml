@@ -1,0 +1,70 @@
+# MishimaDocs engine must be present two levels above the adapter folder (see README / Directory.Build.props).
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+  packages: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  build-test-verify:
+    runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: "10.0.x"
+      - name: Resolve adapter path
+        id: paths
+        run: |
+          set -e
+          if [ -f csharp/robotico-repository-mishimadocs-csharp/Robotico.Repository.Mishima.sln ]; then
+            echo "adapter=csharp/robotico-repository-mishimadocs-csharp" >> "$GITHUB_OUTPUT"
+            echo "has_csharp_tools=1" >> "$GITHUB_OUTPUT"
+          else
+            echo "adapter=." >> "$GITHUB_OUTPUT"
+            echo "has_csharp_tools=0" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Authenticate to GitHub Packages (Robotico.*)
+        working-directory: ${{ steps.paths.outputs.adapter }}
+        run: dotnet nuget update source github --username ${{ github.repository_owner }} --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
+      - name: Restore, build, test with coverage
+        working-directory: ${{ steps.paths.outputs.adapter }}
+        run: |
+          set -e
+          dotnet restore Robotico.Repository.Mishima.sln
+          dotnet build Robotico.Repository.Mishima.sln -c Release --no-restore
+          dotnet test Robotico.Repository.Mishima.sln --no-build -c Release --verbosity normal \
+            --collect:"XPlat Code Coverage" --results-directory ./coverage --settings tests/coverlet.runsettings
+      - name: Verify library bar (umbrella csharp/tools)
+        if: steps.paths.outputs.has_csharp_tools == '1'
+        working-directory: csharp
+        run: pwsh ./tools/verify-robotico-library-bar.ps1
+      - name: Check line coverage (Robotico.Repository.Mishima ≥ 85%)
+        working-directory: ${{ steps.paths.outputs.adapter }}
+        run: |
+          set -e
+          COV_FILE=$(find ./coverage -name 'coverage.cobertura.xml' 2>/dev/null | head -1)
+          if [ -z "$COV_FILE" ]; then echo "No coverage file found"; exit 1; fi
+          RATE=$(sed -n 's/.*line-rate="\([^"]*\)".*/\1/p' "$COV_FILE" | head -1)
+          if [ -z "$RATE" ]; then echo "Could not parse line-rate"; exit 1; fi
+          echo "Line coverage (overall in report): ${RATE}"
+          if [ "$(echo "$RATE < 0.85" | bc)" -eq 1 ]; then echo "Coverage below 85%"; exit 1; fi
+      - name: Upload coverage
+        uses: codecov/codecov-action@v5
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
+        with:
+          directory: ${{ steps.paths.outputs.adapter }}/coverage
+          fail_ci_if_error: false

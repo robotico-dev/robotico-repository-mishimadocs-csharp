@@ -18,9 +18,9 @@ public sealed class MishimaRepositoryTests
     public void Add_then_GetById_round_trips()
     {
         using IMishimaDatabase db = CreateDatabase();
-        var repo = new MishimaRepository<SampleEntity, Guid>(db, "orders");
+        MishimaRepository<SampleEntity, Guid> repo = new MishimaRepository<SampleEntity, Guid>(db, "orders");
         Guid id = Guid.NewGuid();
-        var entity = new SampleEntity { Id = id, Name = "a" };
+        SampleEntity entity = new SampleEntity { Id = id, Name = "a" };
 
         Assert.True(repo.Add(entity).IsSuccess());
         Robotico.Result.Result<SampleEntity> got = repo.GetById(id);
@@ -33,7 +33,7 @@ public sealed class MishimaRepositoryTests
     public void GetById_returns_NOT_FOUND_when_missing()
     {
         using IMishimaDatabase db = CreateDatabase();
-        var repo = new MishimaRepository<SampleEntity, Guid>(db, "orders");
+        MishimaRepository<SampleEntity, Guid> repo = new MishimaRepository<SampleEntity, Guid>(db, "orders");
 
         Robotico.Result.Result<SampleEntity> got = repo.GetById(Guid.NewGuid());
 
@@ -44,9 +44,9 @@ public sealed class MishimaRepositoryTests
     public void Add_duplicate_returns_DUPLICATE()
     {
         using IMishimaDatabase db = CreateDatabase();
-        var repo = new MishimaRepository<SampleEntity, Guid>(db, "orders");
+        MishimaRepository<SampleEntity, Guid> repo = new MishimaRepository<SampleEntity, Guid>(db, "orders");
         Guid id = Guid.NewGuid();
-        var entity = new SampleEntity { Id = id, Name = "x" };
+        SampleEntity entity = new SampleEntity { Id = id, Name = "x" };
 
         Assert.True(repo.Add(entity).IsSuccess());
         Robotico.Result.Result dup = repo.Add(new SampleEntity { Id = id, Name = "y" });
@@ -58,7 +58,7 @@ public sealed class MishimaRepositoryTests
     public void Update_then_GetById_reflects_changes()
     {
         using IMishimaDatabase db = CreateDatabase();
-        var repo = new MishimaRepository<SampleEntity, Guid>(db, "orders");
+        MishimaRepository<SampleEntity, Guid> repo = new MishimaRepository<SampleEntity, Guid>(db, "orders");
         Guid id = Guid.NewGuid();
         Assert.True(repo.Add(new SampleEntity { Id = id, Name = "v1" }).IsSuccess());
         Assert.True(repo.Update(new SampleEntity { Id = id, Name = "v2" }).IsSuccess());
@@ -72,9 +72,9 @@ public sealed class MishimaRepositoryTests
     public void Remove_then_GetById_fails()
     {
         using IMishimaDatabase db = CreateDatabase();
-        var repo = new MishimaRepository<SampleEntity, Guid>(db, "orders");
+        MishimaRepository<SampleEntity, Guid> repo = new MishimaRepository<SampleEntity, Guid>(db, "orders");
         Guid id = Guid.NewGuid();
-        var entity = new SampleEntity { Id = id, Name = "z" };
+        SampleEntity entity = new SampleEntity { Id = id, Name = "z" };
         Assert.True(repo.Add(entity).IsSuccess());
         Assert.True(repo.Remove(entity).IsSuccess());
         Assert.False(repo.GetById(id).IsSuccess());
@@ -84,7 +84,7 @@ public sealed class MishimaRepositoryTests
     public void Remove_missing_returns_NOT_FOUND()
     {
         using IMishimaDatabase db = CreateDatabase();
-        var repo = new MishimaRepository<SampleEntity, Guid>(db, "orders");
+        MishimaRepository<SampleEntity, Guid> repo = new MishimaRepository<SampleEntity, Guid>(db, "orders");
         Guid id = Guid.NewGuid();
 
         Robotico.Result.Result r = repo.Remove(new SampleEntity { Id = id, Name = "ghost" });
@@ -96,7 +96,7 @@ public sealed class MishimaRepositoryTests
     public void Update_missing_returns_NOT_FOUND()
     {
         using IMishimaDatabase db = CreateDatabase();
-        var repo = new MishimaRepository<SampleEntity, Guid>(db, "orders");
+        MishimaRepository<SampleEntity, Guid> repo = new MishimaRepository<SampleEntity, Guid>(db, "orders");
 
         Robotico.Result.Result r = repo.Update(new SampleEntity { Id = Guid.NewGuid(), Name = "n" });
 
@@ -107,7 +107,7 @@ public sealed class MishimaRepositoryTests
     public void GetById_throws_when_id_null()
     {
         using IMishimaDatabase db = CreateDatabase();
-        var repo = new MishimaRepository<SampleStringEntity, string>(db, "s");
+        MishimaRepository<SampleStringEntity, string> repo = new MishimaRepository<SampleStringEntity, string>(db, "s");
 
         Assert.Throws<ArgumentNullException>(() => repo.GetById(null!));
     }
@@ -115,7 +115,7 @@ public sealed class MishimaRepositoryTests
     [Fact]
     public async Task MishimaUnitOfWork_CommitAsync_succeeds()
     {
-        var uow = new MishimaUnitOfWork();
+        MishimaUnitOfWork uow = new MishimaUnitOfWork();
         Robotico.Result.Result r = await uow.CommitAsync();
         Assert.True(r.IsSuccess());
     }
