@@ -50,7 +50,7 @@ jobs:
           echo "Line coverage (overall in report): ${RATE}"
           if [ "$(echo "$RATE < 0.85" | bc)" -eq 1 ]; then echo "Coverage below 85%"; exit 1; fi
       - name: Upload coverage
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         if: github.event_name == 'push' || github.event_name == 'pull_request'
         with:
           directory: ./coverage
