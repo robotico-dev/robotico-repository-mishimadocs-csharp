@@ -2,9 +2,9 @@ using MishimaDocs;
 using MishimaDocs.IO;
 using Xunit;
 
-namespace Robotico.Repository.Mishima.Tests;
+namespace Robotico.Repository.MishimaDocs.Tests;
 
-public sealed class MishimaRepositoryAsyncTests
+public sealed class MishimaDocsRepositoryAsyncTests
 {
     [Fact]
     public async Task AddAsync_GetByIdAsync_round_trips_with_async_database()
@@ -19,7 +19,7 @@ public sealed class MishimaRepositoryAsyncTests
         {
             IMishimaAsyncDatabase asyncDb = Assert.IsAssignableFrom<IMishimaAsyncDatabase>(db);
             Assert.True(asyncDb.HasAsyncPersistence);
-            MishimaRepository<SampleEntity, Guid> repo = new MishimaRepository<SampleEntity, Guid>(db, "orders");
+            MishimaDocsRepository<SampleEntity, Guid> repo = new MishimaDocsRepository<SampleEntity, Guid>(db, "orders");
             Guid id = Guid.NewGuid();
             SampleEntity entity = new SampleEntity { Id = id, Name = "async" };
 
@@ -38,9 +38,9 @@ public sealed class MishimaRepositoryAsyncTests
     }
 
     [Fact]
-    public void MishimaUnitOfWork_capabilities_match_immediate_commit_semantics()
+    public void MishimaDocsUnitOfWork_capabilities_match_immediate_commit_semantics()
     {
-        MishimaUnitOfWork uow = new MishimaUnitOfWork();
+        MishimaDocsUnitOfWork uow = new MishimaDocsUnitOfWork();
         Assert.Equal(global::Robotico.Repository.UnitOfWorkCommitMode.NoOpCommitSuccess, uow.Capabilities.CommitMode);
         Assert.False(uow.Capabilities.CommitCoordinatesDomainWrites);
         Assert.False(uow.Capabilities.SupportsTransactions);
@@ -49,7 +49,7 @@ public sealed class MishimaRepositoryAsyncTests
     [Fact]
     public void UnitOfWorkGuard_DeferredUntilCommit_throws_for_mishima_uow()
     {
-        MishimaUnitOfWork uow = new MishimaUnitOfWork();
+        MishimaDocsUnitOfWork uow = new MishimaDocsUnitOfWork();
         Assert.Throws<InvalidOperationException>(() =>
             global::Robotico.Repository.UnitOfWorkGuard.Require(
                 uow,

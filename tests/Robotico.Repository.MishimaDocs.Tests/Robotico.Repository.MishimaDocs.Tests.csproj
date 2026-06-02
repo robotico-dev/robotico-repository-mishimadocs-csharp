@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Robotico.Repository.Mishima.Tests</RootNamespace>
-    <AssemblyName>Robotico.Repository.Mishima.Tests</AssemblyName>
-    <PackageId>Robotico.Repository.Mishima.Tests</PackageId>
+    <RootNamespace>Robotico.Repository.MishimaDocs.Tests</RootNamespace>
+    <AssemblyName>Robotico.Repository.MishimaDocs.Tests</AssemblyName>
+    <PackageId>Robotico.Repository.MishimaDocs.Tests</PackageId>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <NoWarn>$(NoWarn);CA1707;CA1515;CA1711;CA2007;IDE0005;IDE0090</NoWarn>
@@ -22,6 +22,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Robotico.Repository.Mishima\Robotico.Repository.Mishima.csproj" />
+    <ProjectReference Include="..\..\src\Robotico.Repository.MishimaDocs\Robotico.Repository.MishimaDocs.csproj" />
   </ItemGroup>
 </Project>

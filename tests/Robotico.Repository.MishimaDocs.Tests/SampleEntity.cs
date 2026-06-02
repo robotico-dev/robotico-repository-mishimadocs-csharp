@@ -1,6 +1,6 @@
 using Robotico.Domain;
 
-namespace Robotico.Repository.Mishima.Tests;
+namespace Robotico.Repository.MishimaDocs.Tests;
 
 /// <summary>Test entity with <see cref="Guid"/> id.</summary>
 public sealed class SampleEntity : IEntity<Guid>

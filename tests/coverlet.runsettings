@@ -5,7 +5,7 @@
       <DataCollector friendlyName="XPlat Code Coverage">
         <Configuration>
           <Format>cobertura</Format>
-          <Include>[Robotico.Repository.Mishima]*</Include>
+          <Include>[Robotico.Repository.MishimaDocs]*</Include>
           <Exclude>[Robotico.Result]*,[Robotico.Domain]*,[Robotico.Repository]*,[xunit.*]*,[coverlet.*]*,[MishimaDocs]*</Exclude>
         </Configuration>
       </DataCollector>

@@ -2,7 +2,7 @@ using System.Globalization;
 using CsCheck;
 using Xunit;
 
-namespace Robotico.Repository.Mishima.Tests;
+namespace Robotico.Repository.MishimaDocs.Tests;
 
 /// <summary>Property checks for stable Mishima document id string formatting.</summary>
 public sealed class MishimaDocumentIdFormatterPropertyTests

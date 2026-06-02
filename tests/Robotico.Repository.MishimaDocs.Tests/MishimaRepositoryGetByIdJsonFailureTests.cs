@@ -4,10 +4,10 @@ using MishimaDocs.IO;
 using Robotico.Result.Errors;
 using Xunit;
 
-namespace Robotico.Repository.Mishima.Tests;
+namespace Robotico.Repository.MishimaDocs.Tests;
 
-/// <summary><see cref="Robotico.Repository.Mishima.MishimaRepository{TEntity, TId}"/> maps JSON deserialization failures to exception errors.</summary>
-public sealed class MishimaRepositoryGetByIdJsonFailureTests
+/// <summary><see cref="Robotico.Repository.MishimaDocs.MishimaDocsRepository{TEntity, TId}"/> maps JSON deserialization failures to exception errors.</summary>
+public sealed class MishimaDocsRepositoryGetByIdJsonFailureTests
 {
     private static IMishimaDatabase CreateDatabase()
     {
@@ -20,7 +20,7 @@ public sealed class MishimaRepositoryGetByIdJsonFailureTests
     public void GetById_returns_error_when_payload_is_not_valid_entity_json()
     {
         using IMishimaDatabase db = CreateDatabase();
-        MishimaRepository<SampleEntity, Guid> repo = new MishimaRepository<SampleEntity, Guid>(db, "badjson");
+        MishimaDocsRepository<SampleEntity, Guid> repo = new MishimaDocsRepository<SampleEntity, Guid>(db, "badjson");
         Guid id = Guid.NewGuid();
         string documentId = MishimaDocumentIdFormatter.Format(id);
         IMishimaCollection collection = db.GetCollection("badjson");

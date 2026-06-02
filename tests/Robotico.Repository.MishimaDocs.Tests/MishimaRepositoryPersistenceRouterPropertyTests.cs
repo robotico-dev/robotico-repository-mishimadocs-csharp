@@ -3,10 +3,10 @@ using MishimaDocs;
 using Robotico.Result.Errors;
 using Xunit;
 
-namespace Robotico.Repository.Mishima.Tests;
+namespace Robotico.Repository.MishimaDocs.Tests;
 
-/// <summary>Property-based checks for <see cref="MishimaRepositoryPersistenceRouter"/> classification.</summary>
-public sealed class MishimaRepositoryPersistenceRouterPropertyTests
+/// <summary>Property-based checks for <see cref="MishimaDocsRepositoryPersistenceRouter"/> classification.</summary>
+public sealed class MishimaDocsRepositoryPersistenceRouterPropertyTests
 {
     [Fact]
     public void MapAfterAdd_DocumentAlreadyExists_always_has_code_DUPLICATE()
@@ -15,7 +15,7 @@ public sealed class MishimaRepositoryPersistenceRouterPropertyTests
         {
             MishimaPersistenceException ex = new MishimaPersistenceException(MishimaPersistenceErrorCode.DocumentAlreadyExists, "dup");
             SampleEntity entity = new SampleEntity { Id = entityId, Name = "e" };
-            Robotico.Result.Result r = MishimaRepositoryPersistenceRouter.MapAfterAdd<SampleEntity, Guid>(ex, entity);
+            Robotico.Result.Result r = MishimaDocsRepositoryPersistenceRouter.MapAfterAdd<SampleEntity, Guid>(ex, entity);
             return r.IsError(out IError? err) && err!.Code == "DUPLICATE";
         });
     }
@@ -27,7 +27,7 @@ public sealed class MishimaRepositoryPersistenceRouterPropertyTests
         {
             MishimaPersistenceException ex = new MishimaPersistenceException(MishimaPersistenceErrorCode.DocumentNotFound, "nf");
             SampleEntity entity = new SampleEntity { Id = entityId, Name = "e" };
-            Robotico.Result.Result r = MishimaRepositoryPersistenceRouter.MapAfterReplace<SampleEntity, Guid>(ex, entity);
+            Robotico.Result.Result r = MishimaDocsRepositoryPersistenceRouter.MapAfterReplace<SampleEntity, Guid>(ex, entity);
             return r.IsError(out IError? err) && err!.Code == "NOT_FOUND";
         });
     }
@@ -39,7 +39,7 @@ public sealed class MishimaRepositoryPersistenceRouterPropertyTests
         {
             MishimaPersistenceException ex = new MishimaPersistenceException(MishimaPersistenceErrorCode.DocumentNotFound, "nf");
             SampleEntity entity = new SampleEntity { Id = entityId, Name = "e" };
-            Robotico.Result.Result r = MishimaRepositoryPersistenceRouter.MapAfterDelete<SampleEntity, Guid>(ex, entity);
+            Robotico.Result.Result r = MishimaDocsRepositoryPersistenceRouter.MapAfterDelete<SampleEntity, Guid>(ex, entity);
             return r.IsError(out IError? err) && err!.Code == "NOT_FOUND";
         });
     }
@@ -51,7 +51,7 @@ public sealed class MishimaRepositoryPersistenceRouterPropertyTests
         {
             MishimaPersistenceException ex = new MishimaPersistenceException(MishimaPersistenceErrorCode.DocumentNotFound, "x");
             Robotico.Result.Result<SampleEntity> r =
-                MishimaRepositoryPersistenceRouter.MapAfterGetById<SampleEntity, Guid>(ex, id);
+                MishimaDocsRepositoryPersistenceRouter.MapAfterGetById<SampleEntity, Guid>(ex, id);
             return r.IsError();
         });
     }

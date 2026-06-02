@@ -1,7 +1,7 @@
 using System.Globalization;
 using Xunit;
 
-namespace Robotico.Repository.Mishima.Tests;
+namespace Robotico.Repository.MishimaDocs.Tests;
 
 /// <summary>Branch coverage for numeric and string id formatting.</summary>
 public sealed class MishimaDocumentIdFormatterTests
