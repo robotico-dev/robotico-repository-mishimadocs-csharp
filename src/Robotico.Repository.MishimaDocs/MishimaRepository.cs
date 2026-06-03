@@ -3,19 +3,19 @@ using MishimaDocs;
 using Robotico.Domain;
 using Robotico.Result.Errors;
 
-namespace Robotico.Repository.Mishima;
+namespace Robotico.Repository.MishimaDocs;
 
 /// <summary>
 /// MishimaDocs implementation of <see cref="IRepository{TEntity, TId}"/> using one named collection and JSON documents.
 /// </summary>
 /// <remarks>
-/// <para>Each operation maps the entity to a JSON document and uses <see cref="IMishimaCollection"/> CRUD APIs. MishimaDocs commits each write immediately; use <see cref="MishimaUnitOfWork"/> when the host expects an <see cref="IUnitOfWork"/> (CommitAsync is a no-op success for parity with other adapters).</para>
+/// <para>Each operation maps the entity to a JSON document and uses <see cref="IMishimaCollection"/> CRUD APIs. MishimaDocs commits each write immediately; use <see cref="MishimaDocsUnitOfWork"/> when the host expects an <see cref="IUnitOfWork"/> (CommitAsync is a no-op success for parity with other adapters).</para>
 /// <para><typeparamref name="TId"/> is formatted with <see cref="MishimaDocumentIdFormatter"/>; ensure ids are unique and stable for your domain.</para>
 /// <para><see cref="Robotico.Repository.IAsyncRepository{TEntity, TId}"/> uses <see cref="IMishimaAsyncCollection"/> when the database was opened as <see cref="IMishimaAsyncDatabase"/> with <see cref="IMishimaAsyncDatabase.HasAsyncPersistence"/>; otherwise async methods delegate to the synchronous implementation. Reads use MishimaDocs synchronous APIs (see engine documentation).</para>
 /// </remarks>
 /// <typeparam name="TEntity">The entity type (must implement <see cref="IEntity{TId}"/>).</typeparam>
 /// <typeparam name="TId">The type of the entity identifier.</typeparam>
-public sealed partial class MishimaRepository<TEntity, TId>
+public sealed partial class MishimaDocsRepository<TEntity, TId>
     : Robotico.Repository.IRepository<TEntity, TId>, Robotico.Repository.IAsyncRepository<TEntity, TId>
     where TEntity : IEntity<TId>
     where TId : notnull
@@ -23,9 +23,16 @@ public sealed partial class MishimaRepository<TEntity, TId>
     private readonly IMishimaDatabase _database;
     private readonly string _collectionName;
     private readonly IMishimaCollection _collection;
+    private readonly IMishimaWriteBatch? _writeBatch;
 
     /// <summary>Initializes a new repository for the named collection.</summary>
-    public MishimaRepository(IMishimaDatabase database, string collectionName)
+    public MishimaDocsRepository(IMishimaDatabase database, string collectionName)
+        : this(database, collectionName, null)
+    {
+    }
+
+    /// <summary>Initializes a repository optionally bound to a MishimaDocs write batch for atomic multi-collection commits.</summary>
+    public MishimaDocsRepository(IMishimaDatabase database, string collectionName, IMishimaWriteBatch? writeBatch)
     {
         _database = database ?? throw new ArgumentNullException(nameof(database));
         _collectionName = collectionName ?? throw new ArgumentNullException(nameof(collectionName));
@@ -34,6 +41,7 @@ public sealed partial class MishimaRepository<TEntity, TId>
             throw new ArgumentException("Collection name must not be empty.", nameof(collectionName));
         }
 
+        _writeBatch = writeBatch;
         _collection = GetCollection(database, collectionName);
     }
 
@@ -51,7 +59,7 @@ public sealed partial class MishimaRepository<TEntity, TId>
                 return Robotico.Result.Result.Error<TEntity>(new SimpleError($"Entity with id '{id}' not found.", "NOT_FOUND"));
             }
 
-            TEntity? entity = JsonSerializer.Deserialize<TEntity>(element.Value, MishimaRepositoryJsonOptions.Instance);
+            TEntity? entity = JsonSerializer.Deserialize<TEntity>(element.Value, MishimaDocsRepositoryJsonOptions.Instance);
             return entity is null
                 ? Robotico.Result.Result.Error<TEntity>(new SimpleError("Stored document could not be deserialized.", "CORRUPT"))
                 : Robotico.Result.Result.Success(entity);
@@ -62,7 +70,7 @@ public sealed partial class MishimaRepository<TEntity, TId>
         }
         catch (MishimaPersistenceException ex)
         {
-            return MishimaRepositoryPersistenceRouter.MapAfterGetById<TEntity, TId>(ex, id);
+            return MishimaDocsRepositoryPersistenceRouter.MapAfterGetById<TEntity, TId>(ex, id);
         }
     }
 
@@ -74,13 +82,26 @@ public sealed partial class MishimaRepository<TEntity, TId>
         string documentId = MishimaDocumentIdFormatter.Format(entity.Id);
         try
         {
-            JsonElement payload = JsonSerializer.SerializeToElement(entity, MishimaRepositoryJsonOptions.Instance);
-            _collection.Insert(documentId, payload);
+            JsonElement payload = JsonSerializer.SerializeToElement(entity, MishimaDocsRepositoryJsonOptions.Instance);
+            if (_writeBatch is null)
+            {
+                _collection.Insert(documentId, payload);
+            }
+            else
+            {
+                if (_collection.TryGetById(documentId) is not null)
+                {
+                    return Robotico.Result.Result.Error(new SimpleError($"Entity with id '{entity.Id}' already exists.", "DUPLICATE"));
+                }
+
+                _writeBatch.Upsert(_collectionName, documentId, payload);
+            }
+
             return Robotico.Result.Result.Success();
         }
         catch (MishimaPersistenceException ex)
         {
-            return MishimaRepositoryPersistenceRouter.MapAfterAdd<TEntity, TId>(ex, entity);
+            return MishimaDocsRepositoryPersistenceRouter.MapAfterAdd<TEntity, TId>(ex, entity);
         }
     }
 
@@ -92,13 +113,26 @@ public sealed partial class MishimaRepository<TEntity, TId>
         string documentId = MishimaDocumentIdFormatter.Format(entity.Id);
         try
         {
-            JsonElement payload = JsonSerializer.SerializeToElement(entity, MishimaRepositoryJsonOptions.Instance);
-            _collection.Replace(documentId, payload);
+            JsonElement payload = JsonSerializer.SerializeToElement(entity, MishimaDocsRepositoryJsonOptions.Instance);
+            if (_writeBatch is null)
+            {
+                _collection.Replace(documentId, payload);
+            }
+            else
+            {
+                if (_collection.TryGetById(documentId) is null)
+                {
+                    return Robotico.Result.Result.Error(new SimpleError($"Entity with id '{entity.Id}' not found.", "NOT_FOUND"));
+                }
+
+                _writeBatch.Upsert(_collectionName, documentId, payload);
+            }
+
             return Robotico.Result.Result.Success();
         }
         catch (MishimaPersistenceException ex)
         {
-            return MishimaRepositoryPersistenceRouter.MapAfterReplace<TEntity, TId>(ex, entity);
+            return MishimaDocsRepositoryPersistenceRouter.MapAfterReplace<TEntity, TId>(ex, entity);
         }
     }
 
@@ -110,12 +144,25 @@ public sealed partial class MishimaRepository<TEntity, TId>
         string documentId = MishimaDocumentIdFormatter.Format(entity.Id);
         try
         {
-            _collection.Delete(documentId);
+            if (_writeBatch is null)
+            {
+                _collection.Delete(documentId);
+            }
+            else
+            {
+                if (_collection.TryGetById(documentId) is null)
+                {
+                    return Robotico.Result.Result.Error(new SimpleError($"Entity with id '{entity.Id}' not found.", "NOT_FOUND"));
+                }
+
+                _writeBatch.Delete(_collectionName, documentId);
+            }
+
             return Robotico.Result.Result.Success();
         }
         catch (MishimaPersistenceException ex)
         {
-            return MishimaRepositoryPersistenceRouter.MapAfterDelete<TEntity, TId>(ex, entity);
+            return MishimaDocsRepositoryPersistenceRouter.MapAfterDelete<TEntity, TId>(ex, entity);
         }
     }
 

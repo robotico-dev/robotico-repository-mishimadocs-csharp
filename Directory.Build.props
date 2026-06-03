@@ -11,11 +11,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>0.1.1</Version>
-    <Product>Robotico.Repository.Mishima</Product>
-    <PackageId>Robotico.Repository.Mishima</PackageId>
-    <Title>Robotico.Repository.Mishima</Title>
-    <Description>IRepository, IAsyncRepository, and IUnitOfWork backed by MishimaDocs (embedded document store). Each repository operation commits immediately when using sync collections; async writes use IMishimaAsyncCollection when the database supports async persistence. IUnitOfWork.CommitAsync is a no-op success for API parity; IUnitOfWorkCapabilities describes semantics.</Description>
+    <Version>1.0.0</Version>
+    <Product>Robotico.Repository.MishimaDocs</Product>
+    <PackageId>Robotico.Repository.MishimaDocs</PackageId>
+    <Title>Robotico.Repository.MishimaDocs</Title>
+    <Description>IRepository, IAsyncRepository, and IUnitOfWork backed by MishimaDocs (embedded document store). Each repository operation commits immediately when using sync collections; async writes use IMishimaAsyncCollection when the database supports async persistence. MishimaDocsUnitOfWork.CommitAsync is a no-op success for API parity; IUnitOfWorkCapabilities describes semantics.</Description>
     <PackageTags>repository;mishima;mishimadocs;robotico</PackageTags>
   </PropertyGroup>
 
@@ -27,6 +27,6 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <MishimaDocsProjectPath>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\mishima-suite\mishima-docs\src\MishimaDocs\MishimaDocs.csproj'))</MishimaDocsProjectPath>
+    <MishimaDocsProjectPath>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\mishima-suite-X\mishima-docs\src\MishimaDocs\MishimaDocs.csproj'))</MishimaDocsProjectPath>
   </PropertyGroup>
 </Project>

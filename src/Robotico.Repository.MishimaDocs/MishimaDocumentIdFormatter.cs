@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Robotico.Repository.Mishima;
+namespace Robotico.Repository.MishimaDocs;
 
 /// <summary>
 /// Maps entity identifier values to Mishima document id strings (collection primary keys).

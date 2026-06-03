@@ -3,8 +3,8 @@
     <_RoboticoRepositoryHubPath>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\..\robotico-repository-csharp\src\Robotico.Repository\Robotico.Repository.csproj'))</_RoboticoRepositoryHubPath>
   </PropertyGroup>
   <PropertyGroup>
-    <RootNamespace>Robotico.Repository.Mishima</RootNamespace>
-    <AssemblyName>Robotico.Repository.Mishima</AssemblyName>
+    <RootNamespace>Robotico.Repository.MishimaDocs</RootNamespace>
+    <AssemblyName>Robotico.Repository.MishimaDocs</AssemblyName>
     <PackageProjectUrl>https://github.com/robotico-dev/robotico-repository-mishimadocs-csharp</PackageProjectUrl>
     <RepositoryUrl>https://github.com/robotico-dev/robotico-repository-mishimadocs-csharp</RepositoryUrl>
     <RepositoryBranch>main</RepositoryBranch>
@@ -33,6 +33,6 @@
     <PackageReference Include="MishimaDocs" />
   </ItemGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="Robotico.Repository.Mishima.Tests" />
+    <InternalsVisibleTo Include="Robotico.Repository.MishimaDocs.Tests" />
   </ItemGroup>
 </Project>

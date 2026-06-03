@@ -2,12 +2,12 @@ using MishimaDocs;
 using Robotico.Domain;
 using Robotico.Result.Errors;
 
-namespace Robotico.Repository.Mishima;
+namespace Robotico.Repository.MishimaDocs;
 
 /// <summary>
 /// Maps <see cref="MishimaPersistenceException"/> to <see cref="Robotico.Result.Result"/> failures.
 /// </summary>
-internal static class MishimaRepositoryPersistenceRouter
+internal static class MishimaDocsRepositoryPersistenceRouter
 {
     internal static Robotico.Result.Result<TEntity> MapAfterGetById<TEntity, TId>(MishimaPersistenceException ex, TId id)
         where TEntity : IEntity<TId>

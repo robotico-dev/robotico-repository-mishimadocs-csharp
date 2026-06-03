@@ -3,9 +3,9 @@ using MishimaDocs;
 
 #pragma warning disable MA0042 // Async methods delegate to sync paths when Mishima async collection API is not used.
 
-namespace Robotico.Repository.Mishima;
+namespace Robotico.Repository.MishimaDocs;
 
-public sealed partial class MishimaRepository<TEntity, TId>
+public sealed partial class MishimaDocsRepository<TEntity, TId>
 {
     /// <inheritdoc />
     public Task<Robotico.Result.Result<TEntity>> GetByIdAsync(TId id, CancellationToken cancellationToken = default)
@@ -23,13 +23,13 @@ public sealed partial class MishimaRepository<TEntity, TId>
             string documentId = MishimaDocumentIdFormatter.Format(entity.Id);
             try
             {
-                JsonElement payload = JsonSerializer.SerializeToElement(entity, MishimaRepositoryJsonOptions.Instance);
+                JsonElement payload = JsonSerializer.SerializeToElement(entity, MishimaDocsRepositoryJsonOptions.Instance);
                 await asyncCollection.InsertAsync(documentId, payload, cancellationToken).ConfigureAwait(false);
                 return Robotico.Result.Result.Success();
             }
             catch (MishimaPersistenceException ex)
             {
-                return MishimaRepositoryPersistenceRouter.MapAfterAdd<TEntity, TId>(ex, entity);
+                return MishimaDocsRepositoryPersistenceRouter.MapAfterAdd<TEntity, TId>(ex, entity);
             }
         }
 
@@ -45,13 +45,13 @@ public sealed partial class MishimaRepository<TEntity, TId>
             string documentId = MishimaDocumentIdFormatter.Format(entity.Id);
             try
             {
-                JsonElement payload = JsonSerializer.SerializeToElement(entity, MishimaRepositoryJsonOptions.Instance);
+                JsonElement payload = JsonSerializer.SerializeToElement(entity, MishimaDocsRepositoryJsonOptions.Instance);
                 await asyncCollection.ReplaceAsync(documentId, payload, cancellationToken).ConfigureAwait(false);
                 return Robotico.Result.Result.Success();
             }
             catch (MishimaPersistenceException ex)
             {
-                return MishimaRepositoryPersistenceRouter.MapAfterReplace<TEntity, TId>(ex, entity);
+                return MishimaDocsRepositoryPersistenceRouter.MapAfterReplace<TEntity, TId>(ex, entity);
             }
         }
 
@@ -72,7 +72,7 @@ public sealed partial class MishimaRepository<TEntity, TId>
             }
             catch (MishimaPersistenceException ex)
             {
-                return MishimaRepositoryPersistenceRouter.MapAfterDelete<TEntity, TId>(ex, entity);
+                return MishimaDocsRepositoryPersistenceRouter.MapAfterDelete<TEntity, TId>(ex, entity);
             }
         }
 

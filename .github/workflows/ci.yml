@@ -30,29 +30,26 @@ jobs:
         id: paths
         run: |
           set -e
-          if [ -f csharp/robotico-repository-mishimadocs-csharp/Robotico.Repository.Mishima.sln ]; then
+          if [ -f csharp/robotico-repository-mishimadocs-csharp/Robotico.Repository.MishimaDocs.sln ]; then
             echo "adapter=csharp/robotico-repository-mishimadocs-csharp" >> "$GITHUB_OUTPUT"
             echo "has_csharp_tools=1" >> "$GITHUB_OUTPUT"
           else
             echo "adapter=." >> "$GITHUB_OUTPUT"
             echo "has_csharp_tools=0" >> "$GITHUB_OUTPUT"
           fi
-      - name: Authenticate to GitHub Packages (Robotico.*)
-        working-directory: ${{ steps.paths.outputs.adapter }}
-        run: dotnet nuget update source github --username ${{ github.repository_owner }} --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
       - name: Restore, build, test with coverage
         working-directory: ${{ steps.paths.outputs.adapter }}
         run: |
           set -e
-          dotnet restore Robotico.Repository.Mishima.sln
-          dotnet build Robotico.Repository.Mishima.sln -c Release --no-restore
-          dotnet test Robotico.Repository.Mishima.sln --no-build -c Release --verbosity normal \
+          dotnet restore Robotico.Repository.MishimaDocs.sln
+          dotnet build Robotico.Repository.MishimaDocs.sln -c Release --no-restore
+          dotnet test Robotico.Repository.MishimaDocs.sln --no-build -c Release --verbosity normal \
             --collect:"XPlat Code Coverage" --results-directory ./coverage --settings tests/coverlet.runsettings
       - name: Verify library bar (umbrella csharp/tools)
         if: steps.paths.outputs.has_csharp_tools == '1'
         working-directory: csharp
         run: pwsh ./tools/verify-robotico-library-bar.ps1
-      - name: Check line coverage (Robotico.Repository.Mishima ≥ 85%)
+      - name: Check line coverage (Robotico.Repository.MishimaDocs ≥ 85%)
         working-directory: ${{ steps.paths.outputs.adapter }}
         run: |
           set -e

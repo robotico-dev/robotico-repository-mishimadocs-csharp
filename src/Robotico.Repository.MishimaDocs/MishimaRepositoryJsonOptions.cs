@@ -1,11 +1,11 @@
 using System.Text.Json;
 
-namespace Robotico.Repository.Mishima;
+namespace Robotico.Repository.MishimaDocs;
 
 /// <summary>
 /// Shared JSON options for entity serialization to <see cref="System.Text.Json.JsonElement"/>.
 /// </summary>
-internal static class MishimaRepositoryJsonOptions
+internal static class MishimaDocsRepositoryJsonOptions
 {
     internal static readonly JsonSerializerOptions Instance = new()
     {
