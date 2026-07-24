@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-PROJ="${PACK_VERSION_PROJECT:-src/BlueLake.Data.Abstractions/BlueLake.Data.Abstractions.csproj}"
+PROJ="${PACK_VERSION_PROJECT:-src/Robotico.Repository.MishimaDocs/Robotico.Repository.MishimaDocs.csproj}"
 PROJ_PATH="${ROOT}/${PROJ}"
 
 if [[ ! -f "${PROJ_PATH}" ]]; then
